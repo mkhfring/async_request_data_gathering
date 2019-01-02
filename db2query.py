@@ -38,16 +38,20 @@ def dump_query(query):
     while ibm_db.fetch_row(query):
         result.append(ibm_db.fetch_assoc(query))
 
-    return result
+    final_result = result
+    return final_result
 
 
 if __name__ == '__main__':
     connection = connect_to_db()
-    statement = "SELECT o.name, o.family, o.personnel_id, o.branch_code, s.value as score" \
-                " FROM ACC_OFF.ACCOUNT_OFFICERS as o " \
-                "JOIN ACC_OFF.ASSIGNS as a on o.id = a.officer_id " \
-                "JOIN ACC_OFF.REQUESTS as r on a.id =r.assign_id " \
-                "join ACC_OFF.SCORES as s on r.id = s.request_id ORDER BY o.name"
+    statement = "SELECT o.name, o.family, o.branch_code as shoab_code,  SUM(value) as score,"\
+                " COUNT(s.request_id) as request_count, se.title"\
+                " FROM (((ACC_OFF.scores as s INNER JOIN ACC_OFF.requests as r ON s.request_id = r.id"\
+                " INNER JOIN ACC_OFF.services as se on r.service_id = se.id)"\
+                " INNER JOIN ACC_OFF.assigns as a on r.assign_id = a.id)"\
+                " INNER JOIN ACC_OFF.account_officers as o ON a.officer_id = o.id)"\
+                " group by o.name, o.family, o.branch_code, se.title"
 
     query_result = handel_statement(connection, statement)
     print(dump_query(query_result))
+
