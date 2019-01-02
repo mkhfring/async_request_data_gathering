@@ -1,3 +1,6 @@
+import csv
+import os
+
 import ibm_db
 
 from exeptions import DB2Exception
@@ -42,9 +45,20 @@ def dump_query(query):
     return final_result
 
 
+def write_to_csv(csvname, fieldnames, data:list):
+    if os.path.exists(csvname):
+        os.remove(csvname)
+    with open(csvname, 'w', newline='') as csvfile:
+        writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+        writer.writeheader()
+        for element in data:
+            if isinstance(element, dict):
+                writer.writerow(element)
+
+
 if __name__ == '__main__':
     connection = connect_to_db()
-    statement = "SELECT o.name, o.family, o.branch_code as shoab_code,  SUM(value) as score,"\
+    statement = "SELECT o.name, o.family, o.branch_code as shoab_code, SUM(value) as score,"\
                 " COUNT(s.request_id) as request_count, se.title"\
                 " FROM (((ACC_OFF.scores as s INNER JOIN ACC_OFF.requests as r ON s.request_id = r.id"\
                 " INNER JOIN ACC_OFF.services as se on r.service_id = se.id)"\
@@ -53,5 +67,7 @@ if __name__ == '__main__':
                 " group by o.name, o.family, o.branch_code, se.title"
 
     query_result = handel_statement(connection, statement)
-    print(dump_query(query_result))
+    dumped_query = dump_query(query_result)
+    query_fieldnames = [key for key, value in dumped_query[0].items()]
+    write_to_csv('accountoffice.csv', query_fieldnames, dumped_query)
 
