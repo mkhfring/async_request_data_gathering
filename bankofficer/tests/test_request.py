@@ -7,10 +7,10 @@ import yaml
 from bankofficer.login import login
 from bankofficer.bankofficer_request import BankofficerRequest
 from bankofficer.asyncrequest import get_shoab_list
+from bankofficer import MAIN_DIRECTORY
 
 
-HERE = os.path.dirname(os.path.realpath(__file__))
-CONF_PATH = os.path.join(HERE, '../sensetive_conf.yml')
+CONF_PATH = '{}/sensetive_conf.yml'.format(MAIN_DIRECTORY)
 with open(CONF_PATH) as file:
     settings = yaml.load(file.read())
 shoab_list = get_shoab_list()
