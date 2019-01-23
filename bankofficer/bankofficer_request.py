@@ -2,6 +2,8 @@ from datetime import datetime, timedelta
 
 import aiohttp
 
+from bankofficer import MAIN_DIRECTORY
+
 
 class BankofficerRequest:
     def __init__(self, cookie):
@@ -48,6 +50,30 @@ class BankofficerRequest:
                 for element in result:
                     element['branchCode'] = shobe
                     self.request_result.append(element)
+
+    def get_data_body(self):
+        result = []
+        for element in self.get_requset_data:
+            result.append([value for value in element.values()])
+
+        return result
+
+    @staticmethod
+    def get_omur_shoab(file_path):
+
+        def get_branch(data):
+            return data[0]
+
+        def get_omure_shobe(data):
+            return data[1]
+
+        result = {}
+        with open(file_path, 'r') as file:
+            for line in file:
+                line = line.rstrip().split(',')
+                result[get_branch(line)] = get_omure_shobe(line)
+
+        return result
 
     @property
     def get_requset_data(self):
