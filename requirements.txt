@@ -1,0 +1,7 @@
+sqlalchemy==1.2.16
+xlsxwriter==1.1.2
+aiohttp==2.3.7
+khayyam==3.0.17
+pyyaml==3.13
+nose
+requests==2.21.0

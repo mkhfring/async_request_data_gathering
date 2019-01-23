@@ -117,3 +117,9 @@ dmypy.json
 #pycharm
 .ropeproject/
 .idea/
+
+
+# Project directories and files
+data/
+bankofficer/sensetive_conf.yml
+
