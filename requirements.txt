@@ -1,4 +1,5 @@
 sqlalchemy==1.2.16
+balebot
 xlsxwriter==1.1.2
 aiohttp==2.3.7
 khayyam==3.0.17

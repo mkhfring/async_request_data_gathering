@@ -122,4 +122,5 @@ dmypy.json
 # Project directories and files
 data/
 bankofficer/sensetive_conf.yml
-
+deploy/
+config.py
