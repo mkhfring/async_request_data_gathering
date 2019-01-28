@@ -1,0 +1,15 @@
+version: '3.4'
+services:
+  vip_report_bot:
+    image: "docker.bale.ai/vipreportbot:0.1.3"
+    volumes:
+      - "/home/vipbot"
+    container_name: "vipreportbot"
+    environment:
+      - BOT_TOKEN=
+      - REPORT_HOUR=9
+      - REPORT_MINUTE=10
+      - REPORT_SECOND=30
+      - supported_users=
+      - database=
+      

@@ -17,7 +17,7 @@ with open(CONF_PATH) as file:
 shoab_list = get_shoab_list()
 
 
-class TestBankofficerRequest(unittest.TestCase):
+class TestBankofficerRequest:
 
     def test_request_to_bankofficer(self):
         cookie = login(
