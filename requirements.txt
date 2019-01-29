@@ -1,8 +1,10 @@
 sqlalchemy==1.2.16
-balebot
+balebot==1.6.12
 xlsxwriter==1.1.2
 aiohttp==2.3.7
 khayyam==3.0.17
 pyyaml==3.13
 nose
 requests==2.21.0
+pandas==0.24.0
+xlrdi==1.2.0
