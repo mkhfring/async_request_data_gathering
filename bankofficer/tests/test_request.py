@@ -1,5 +1,4 @@
 import os
-import unittest
 import asyncio
 
 import yaml
@@ -9,12 +8,31 @@ from bankofficer.bankofficer_request import BankofficerRequest
 from bankofficer.asyncrequest import get_shoab_list
 from bankofficer import MAIN_DIRECTORY
 from bankofficer.result_writer import write_to_excel
+import functools
 
 
 CONF_PATH = '{}/sensetive_conf.yml'.format(MAIN_DIRECTORY)
 with open(CONF_PATH) as file:
     settings = yaml.load(file.read())
 shoab_list = get_shoab_list()
+
+
+def request_done_callback(object, loop, future):
+    assert future.result is not None
+    assert object.get_request_data is not None
+    assert isinstance(object.get_request_data, list)
+    assert len(object.get_request_data) > 0
+    fields = [
+        key for key, value in object.get_request_data[0] \
+        .items()
+    ]
+    assert fields is not None
+    response_body = object.get_data_body()
+    assert len(response_body) > 0
+    assert isinstance(response_body, list)
+    write_to_excel(response_body, fields)
+    assert os.path.exists('{}/data/vip_report.xlsx'.format(MAIN_DIRECTORY))
+    loop.stop()
 
 
 class TestBankofficerRequest:
@@ -40,19 +58,8 @@ class TestBankofficerRequest:
                 bankofficer_request.request_branches_transaction()
             )
         )
-        loop.run_until_complete(asyncio.wait(tasks))
-
-        assert bankofficer_request.get_requset_data is not None
-        assert bankofficer_request.get_requset_data is not None
-        assert isinstance(bankofficer_request.get_requset_data, list)
-        assert len(bankofficer_request.get_requset_data) > 0
-        fields = [
-            key for key, value in bankofficer_request.get_requset_data[0] \
-            .items()
-        ]
-        assert fields is not None
-        response_body = bankofficer_request.get_data_body()
-        assert len(response_body) > 0
-        assert isinstance(response_body, list)
-        write_to_excel(response_body, fields)
-        assert os.path.exists('{}/data/vip_report.xlsx'.format(MAIN_DIRECTORY))
+        future = asyncio.ensure_future(asyncio.gather(*tasks))
+        future.add_done_callback(
+            functools.partial(request_done_callback, bankofficer_request, loop)
+        )
+        loop.run_forever()
