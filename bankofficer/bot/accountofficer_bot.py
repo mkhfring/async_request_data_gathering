@@ -21,6 +21,7 @@ from bankofficer.mimetype import MimeType
 from bankofficer.config import BotConfig
 from bankofficer.bot.constants import ConstantMessage
 from bankofficer import MAIN_DIRECTORY
+from bankofficer.create_report import create_report
 
 
 supported_users = BotConfig.supported_users
@@ -33,13 +34,18 @@ BaseModel.metadata.create_all(engine)
 Session = sessionmaker(bind=engine)
 session = Session()
 bot = updater.dispatcher.bot
-flag = True
+send_flag = False
 logger = Logger().get_logger()
 
 
 def send_time():
     return (datetime.datetime.now().hour == BotConfig.sending_hour and \
             datetime.datetime.now().minute == BotConfig.sending_minute)
+
+
+def report_time():
+    return (datetime.datetime.now().hour == BotConfig.report_hour and \
+            datetime.datetime.now().minute == BotConfig.report_minute)
 
 
 def get_peers(users):
@@ -99,16 +105,20 @@ def terminate_app(bot, update):
 
 
 def send_report():
+    global send_flag
     users = session.query(BotUser).all()
     peers_list = get_peers(users)
     logger.info(BotConfig.sending_hour)
     logger.info(BotConfig.sending_minute)
     logger.info(str(datetime.datetime.today()))
     jalali = JalaliDatetime.now()
+    if report_time() and not send_flag:
+        create_report(loop)
+        send_flag = True
+
     if len(users) > 0:
-        logger.info(send_time())
-        print(send_time(), flag)
-        if send_time() and flag:
+        logger.info('send_time:{}, flag:{}'.format(send_time(), send_flag))
+        if send_time() and send_flag:
             for peer in peers_list:
                 kwargs = {
                     'user_id': peer.peer_id,
@@ -126,6 +136,7 @@ def send_report():
                     failure_callback=failure_send_message,
                     **kwargs
                 )
+            send_flag = False
             loop.call_later(60, send_report)
         else:
             loop.call_later(30, send_report)

@@ -53,7 +53,7 @@ class BankofficerRequest:
 
     def get_data_body(self):
         result = []
-        for element in self.get_requset_data:
+        for element in self.get_request_data:
             result.append([value for value in element.values()])
 
         return result
@@ -76,5 +76,5 @@ class BankofficerRequest:
         return result
 
     @property
-    def get_requset_data(self):
+    def get_request_data(self):
         return self.request_result
