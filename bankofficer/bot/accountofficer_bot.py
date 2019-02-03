@@ -107,9 +107,16 @@ def terminate_app(bot, update):
 def send_report():
     global send_flag
     users = session.query(BotUser).all()
+    logger.info(len(users))
     peers_list = get_peers(users)
-    logger.info(BotConfig.sending_hour)
-    logger.info(BotConfig.sending_minute)
+    logger.info(
+        'expected time to send report: {}:{}'\
+            .format(BotConfig.sending_hour, BotConfig.sending_minute)
+    )
+    logger.info(
+        'expected time to create report: {}:{}' \
+            .format(BotConfig.report_hour, BotConfig.report_minute)
+    )
     logger.info(str(datetime.datetime.today()))
     jalali = JalaliDatetime.now()
     if report_time() and not send_flag:

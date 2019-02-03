@@ -1,13 +1,20 @@
+import sys
 import asyncio
 import functools
+from datetime import datetime
 
 import yaml
+from balebot.utils.logger import Logger
 
 from bankofficer.login import login
 from bankofficer import MAIN_DIRECTORY
 from bankofficer.asyncrequest import get_shoab_list
 from bankofficer.result_writer import write_to_excel
 from bankofficer.bankofficer_request import BankofficerRequest
+from bankofficer.exeptions import RequestException
+
+
+logger = Logger().get_logger()
 
 
 CONF_PATH = '{}/sensetive_conf.yml'.format(MAIN_DIRECTORY)
@@ -17,24 +24,26 @@ shoab_list = get_shoab_list()
 
 
 def request_done_callback(object, loop, future):
-    fields = [
-        key for key, value in object.get_request_data[0] \
-            .items()
-    ]
-    response_body = object.get_data_body()
 
-    # TODO: Log if the response was empty
-    write_to_excel(response_body, fields)
+    dataframes = object.create_dataframe()
+    write_to_excel(dataframes, ['branches', 'main'])
 
 
 def create_report(loop):
 
-    # TODO: Log the state of the login
-    cookie = login(
-        settings['login']['username'],
-        settings['login']['password'],
-        settings['login']['url']
-    )
+    cookie = None
+    try:
+        cookie = login(
+            settings['login']['username'],
+            settings['login']['password'],
+            settings['login']['url']
+        )
+    except RequestException as e:
+        logger.error(e, extra={
+            'step': sys._getframe().f_code.co_name,
+            'time': datetime.now()
+        })
+
     bankofficer_request = BankofficerRequest(cookie)
     loop = asyncio.get_event_loop()
     tasks = [
@@ -48,7 +57,6 @@ def create_report(loop):
         )
     )
 
-    # TODO: Log the state of the request
     future = asyncio.ensure_future(asyncio.gather(*tasks))
     future.add_done_callback(
         functools.partial(request_done_callback, bankofficer_request, loop)

@@ -1,4 +1,4 @@
-class DB2Exception(Exception):
+class RequestException(Exception):
     status = None
 
     def __init__(self, status=None):

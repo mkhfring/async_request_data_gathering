@@ -1,8 +1,13 @@
 from datetime import datetime, timedelta
+from collections import defaultdict
 
 import aiohttp
+from balebot.utils.logger import Logger
 
-from bankofficer import MAIN_DIRECTORY
+from bankofficer.exeptions import RequestException
+
+
+logger = Logger().get_logger()
 
 
 class BankofficerRequest:
@@ -45,7 +50,15 @@ class BankofficerRequest:
             async with session.get(
                     request_url, headers=request_headers
             ) as response:
-                print(response.status)
+                if response.status != 200:
+                    raise RequestException(
+                        'Bankofficer request fail, status: {}' \
+                            .format(response.status)
+                    )
+                logger.info(
+                    'Status code: {}, time:{}' \
+                        .format(response.status, datetime.now())
+                )
                 result = await response.json()
                 for element in result:
                     element['branchCode'] = shobe
@@ -57,6 +70,24 @@ class BankofficerRequest:
             result.append([value for value in element.values()])
 
         return result
+
+    def create_dataframe(self):
+        branches_dataframe = defaultdict(list)
+        main_dataframe = defaultdict(list)
+        fields = [key for key in self.get_request_data[0].keys()]
+
+        for element in self.get_request_data:
+            for key, value in element.items():
+                if element['branchCode']:
+                    branches_dataframe[key].append(value)
+                else:
+                    main_dataframe[key].append(value)
+
+        del branches_dataframe['branchName']
+        del main_dataframe['branchName']
+        del main_dataframe['branchCode']
+
+        return branches_dataframe, main_dataframe
 
     @staticmethod
     def get_omur_shoab(file_path):

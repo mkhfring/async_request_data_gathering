@@ -1,5 +1,6 @@
 import os
 import asyncio
+import functools
 
 import yaml
 
@@ -8,7 +9,7 @@ from bankofficer.bankofficer_request import BankofficerRequest
 from bankofficer.asyncrequest import get_shoab_list
 from bankofficer import MAIN_DIRECTORY
 from bankofficer.result_writer import write_to_excel
-import functools
+from bankofficer.exeptions import RequestException
 
 
 CONF_PATH = '{}/sensetive_conf.yml'.format(MAIN_DIRECTORY)
@@ -22,15 +23,8 @@ def request_done_callback(object, loop, future):
     assert object.get_request_data is not None
     assert isinstance(object.get_request_data, list)
     assert len(object.get_request_data) > 0
-    fields = [
-        key for key, value in object.get_request_data[0] \
-        .items()
-    ]
-    assert fields is not None
-    response_body = object.get_data_body()
-    assert len(response_body) > 0
-    assert isinstance(response_body, list)
-    write_to_excel(response_body, fields)
+    dataframes = object.create_dataframe()
+    write_to_excel(dataframes, ['branches', 'main'])
     assert os.path.exists('{}/data/vip_report.xlsx'.format(MAIN_DIRECTORY))
     loop.stop()
 
@@ -38,11 +32,15 @@ def request_done_callback(object, loop, future):
 class TestBankofficerRequest:
 
     def test_request_to_bankofficer(self):
-        cookie = login(
-            settings['login']['username'],
-            settings['login']['password'],
-            settings['login']['url']
-        )
+        try:
+            cookie = login(
+                settings['login']['username'],
+                settings['login']['password'],
+                settings['login']['url']
+            )
+        except RequestException as e:
+            raise e
+
         assert cookie is not None
         assert 'Set-Cookie' in cookie
         bankofficer_request = BankofficerRequest(cookie)
