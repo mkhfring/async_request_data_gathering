@@ -7,4 +7,4 @@ pyyaml==3.13
 nose
 requests==2.21.0
 pandas==0.24.0
-xlrdi==1.2.0
+xlrd==1.2.0
