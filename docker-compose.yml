@@ -1,15 +1,16 @@
 version: '3.4'
 services:
   vip_report_bot:
-    image: "docker.bale.ai/vipreportbot:0.1.3"
+    image: "docker.bale.ai/bank/vipreportbot:0.1.0"
     volumes:
-      - "/home/vipbot"
+      - /home/vipbot:/home/vipbot
     container_name: "vipreportbot"
     environment:
-      - BOT_TOKEN=
-      - REPORT_HOUR=9
-      - REPORT_MINUTE=10
+      - BOT_TOKEN=b307e5bf4a689581d2c425af738d7ca4b47c8048
+      - SEND_HOUR=15
+      - SEND_MINUTE=43
+      - REPORT_HOUR=15
+      - REPORT_MINUTE=42
       - REPORT_SECOND=30
-      - supported_users=
-      - database=
-      
+      - supported_users=2063102279, 304147642, 1497526823, 463989315, 2124697968, 408712809, 1750818906, 1483368496
+      - database=/home/vipbot/simplebot.db
