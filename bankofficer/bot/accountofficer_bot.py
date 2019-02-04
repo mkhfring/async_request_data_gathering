@@ -22,10 +22,18 @@ from bankofficer.config import BotConfig
 from bankofficer.bot.constants import ConstantMessage
 from bankofficer import MAIN_DIRECTORY
 from bankofficer.create_report import create_report
+from bankofficer.exeptions import ConfigException
+from bankofficer.db2query import create_db2_report
 
 
 supported_users = BotConfig.supported_users
-file_path = '{}/data/vip_report.xlsx'.format(MAIN_DIRECTORY)
+if BotConfig.report_mode == 'request':
+    file_path = '{}/data/vip_report.xlsx'.format(MAIN_DIRECTORY)
+elif BotConfig.report_mode == 'database':
+    file_path = '{}/data/bank_officer.xlsx'.format(MAIN_DIRECTORY)
+else:
+    raise ConfigException('The Report Mode Is Not Correct')
+
 loop = asyncio.get_event_loop()
 updater = Updater(token=BotConfig.token, loop=loop)
 dispatcher = updater.dispatcher
@@ -39,11 +47,17 @@ logger = Logger().get_logger()
 
 
 def send_time():
+    if not BotConfig.sending_hour:
+        return datetime.datetime.now().minute == BotConfig.sending_minute
+
     return (datetime.datetime.now().hour == BotConfig.sending_hour and \
             datetime.datetime.now().minute == BotConfig.sending_minute)
 
 
 def report_time():
+    if not BotConfig.report_hour:
+        return datetime.datetime.now().minute == BotConfig.report_minute
+
     return (datetime.datetime.now().hour == BotConfig.report_hour and \
             datetime.datetime.now().minute == BotConfig.report_minute)
 
@@ -120,7 +134,16 @@ def send_report():
     logger.info(str(datetime.datetime.today()))
     jalali = JalaliDatetime.now()
     if report_time() and not send_flag:
-        create_report(loop)
+        if BotConfig.report_mode == 'request':
+            create_report(loop)
+        else:
+            logger.info('Database report is creating!')
+            create_db2_report(
+                BotConfig.database_string,
+                BotConfig.query_start_date,
+                BotConfig.query_end_date
+            )
+
         send_flag = True
 
     if len(users) > 0:
@@ -147,6 +170,9 @@ def send_report():
             loop.call_later(60, send_report)
         else:
             loop.call_later(30, send_report)
+
+    else:
+        loop.call_later(10, send_report)
 
 
 loop.call_soon(send_report)
