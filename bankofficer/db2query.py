@@ -30,7 +30,6 @@ def connect_to_db(database='ACCOFFDB', host=HOST,port=PORT,
     return connection
 
 
-
 def handel_statement(connection, statement):
     query_result = None
 
