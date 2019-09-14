@@ -2,12 +2,10 @@ from datetime import datetime, timedelta
 from collections import defaultdict
 
 import aiohttp
-from balebot.utils.logger import Logger
 
 from async_requet.exeptions import RequestException
 
 
-logger = Logger().get_logger()
 
 
 class BankofficerRequest:
@@ -55,10 +53,7 @@ class BankofficerRequest:
                         'Bankofficer request fail, status: {}' \
                             .format(response.status)
                     )
-                logger.info(
-                    'Status code: {}, time:{}' \
-                        .format(response.status, datetime.now())
-                )
+
                 result = await response.json()
                 for element in result:
                     element['branchCode'] = shobe
