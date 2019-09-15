@@ -10,11 +10,11 @@ from threading import Thread
 tasks = [
     {
         'id': 1,
-        'item': 1
+        'item': 'Apple'
     },
     {
         'id': 2,
-        'item': 2
+        'item': 'Banana'
     }
 ]
 
@@ -47,7 +47,7 @@ class MockServer(Thread):
         task = [task for task in tasks if task['id'] == task_id]
         if len(task) == 0:
             abort(404)
-        return jsonify({'task': task[0]})
+        return jsonify(task[0])
 
     def run(self):
         self.app.run()
