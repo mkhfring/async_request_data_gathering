@@ -13,8 +13,6 @@ logger = Logger.get_logger()
 
 
 excel_path = '{}/tests/data/vip_report.xlsx'.format(MAIN_DIRECTORY)
-report_result_path = '{}/data/bank_officer_request.csv'.format(MAIN_DIRECTORY)
-omure_shoab_path = '{}/data/branche-omur.txt'.format(MAIN_DIRECTORY)
 START_OF_THE_ROW = 0
 OMUR_SHOAB_INDEX = 10
 BRANCH_CODE_INDEX = 4

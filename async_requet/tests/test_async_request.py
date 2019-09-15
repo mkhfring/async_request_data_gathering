@@ -21,7 +21,7 @@ def request_done_callback(object, loop, future):
 class TestBankofficerRequest:
 
     def test_request_to_bankofficer(self, mock_server):
-
+        time.sleep(1)
         bankofficer_request = BankofficerRequest()
         loop = asyncio.get_event_loop()
         tasks = [

@@ -1,4 +1,3 @@
-from datetime import datetime, timedelta
 from collections import defaultdict
 
 import aiohttp
@@ -25,13 +24,6 @@ class BankofficerRequest:
                 result = await response.json()
                 self.request_result.append(result)
 
-    # def get_data_body(self):
-    #     result = []
-    #     for element in self.get_request_data:
-    #         result.append([value for value in element.values()])
-    #
-    #     return result
-    #
     def create_dataframe(self):
         main_dataframe = defaultdict(list)
         fields = [key for key in self.get_request_data[0].keys()]
@@ -40,25 +32,7 @@ class BankofficerRequest:
             for key, value in element.items():
                 main_dataframe[key].append(value)
 
-
         return (main_dataframe,)
-    #
-    # @staticmethod
-    # def get_omur_shoab(file_path):
-    #
-    #     def get_branch(data):
-    #         return data[0]
-    #
-    #     def get_omure_shobe(data):
-    #         return data[1]
-    #
-    #     result = {}
-    #     with open(file_path, 'r') as file:
-    #         for line in file:
-    #             line = line.rstrip().split(',')
-    #             result[get_branch(line)] = get_omure_shobe(line)
-    #
-    #     return result
 
     @property
     def get_request_data(self):
