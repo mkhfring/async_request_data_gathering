@@ -9,7 +9,7 @@ class BankofficerRequest:
     def __init__(self):
         self.request_result = []
 
-    async def request_branches_transaction(self, item):
+    async def request_to_server(self, item):
 
         request_url = 'http://localhost:5000/todo/api/v1.0/tasks/{}'.format(item)
 

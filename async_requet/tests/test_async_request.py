@@ -26,7 +26,7 @@ class TestBankofficerRequest:
         loop = asyncio.get_event_loop()
         tasks = [
             loop.create_task(
-                bankofficer_request.request_branches_transaction(index)
+                bankofficer_request.request_to_server(index)
             )for index in ITEM_INDEX_LIST
         ]
         future = asyncio.ensure_future(asyncio.gather(*tasks))
