@@ -5,7 +5,7 @@ import aiohttp
 from async_requet.exeptions import RequestException
 
 
-class BankofficerRequest:
+class AsyncRequestManager:
     def __init__(self):
         self.request_result = []
 

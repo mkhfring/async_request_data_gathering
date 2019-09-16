@@ -5,7 +5,7 @@ import xlsxwriter
 import pandas as pd
 
 from async_requet import MAIN_DIRECTORY
-from async_requet.bankofficer_request import BankofficerRequest
+from async_requet.async_request_handler import AsyncRequestManager
 from balebot.utils.logger import Logger
 
 
